@@ -12,11 +12,27 @@ const firebaseConfig = {
   measurementId: "G-29KQQN1V8W",
 };
 
+const missingEnvVars = Object.entries(firebaseConfig)
+  .filter(([_, value]) => !value)
+  .map(([key]) => key);
+
+if (missingEnvVars.length > 0) {
+  throw new Error(
+    `Missing firebase environment variables:${missingEnvVars.join(", ")}. Please check your .env file`,
+  );
+}
+
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
+<<<<<<< HEAD
 
 export const analytics = getAnalytics(app);
 
 export default app;
+=======
+googleProvider.addScope("email");
+googleProvider.addScope("profile");
+export { signInWithPopup };
+>>>>>>> 0fedac340207309a6ba55f3f0229c8e3998dbbf3

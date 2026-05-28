@@ -19,22 +19,24 @@ const LearningPage = lazy(() => import("./pages/LearningPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
+const ReportPage = lazy(() => import("./pages/ReportPage"));
 const Success = lazy(() => import("./pages/Success"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const DocumentationPage = lazy(() => import("./pages/Documentation/DocumentationPage"));
 import CompleteProfilePage from "./pages/CompleteProfilePage";
 import "./App.css";
-// Redirects from the root path based on authentication status.
+
+// Redirect from root
 const RootRedirect = () => {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Navigate to="/login" replace />;
-  // Redirect to onboarding if profile is incomplete
   return <Navigate to={user?.isProfileComplete ? "/dashboard" : "/complete-profile"} replace />;
 };
 
-// Prevents authenticated users from accessing public-only pages like login/signup.
+// Public routes (block logged-in users)
 const PublicRoutes = () => {
   const { isAuthenticated, user } = useAuth();
   if (!isAuthenticated) return <Outlet />;
-  // Redirect to onboarding if profile is incomplete
   return <Navigate to={user?.isProfileComplete ? "/dashboard" : "/complete-profile"} replace />;
 };
 
@@ -42,10 +44,11 @@ const App = () => {
   return (
     <Suspense fallback={<LoadingSpinner />}>
       <Routes>
-        {/* Redirect from root */}
+
+        {/* Root redirect */}
         <Route path="/" element={<RootRedirect />} />
 
-        {/* Public routes that logged-in users should not see */}
+        {/* Public routes */}
         <Route element={<PublicRoutes />}>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignUpPage />} />
@@ -53,7 +56,10 @@ const App = () => {
           <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Route>
 
-        {/* Protected Routes with shared Header + Sidebar layout */}
+        {/* Documentation Route - Public and independent of PublicRoutes wrapper so it's accessible whether logged in or not */}
+        <Route path="/documentation" element={<DocumentationPage />} />
+
+        {/* Protected routes */}
         <Route element={<ProtectedRoute />}>
           {/* Complete Profile Route */}
           <Route path="/complete-profile" element={<CompleteProfilePage />} />
@@ -64,14 +70,18 @@ const App = () => {
             <Route path="/discussions" element={<DiscussionsPage />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/certificates" element={<CertificatesPage />} />
+            <Route path="/report" element={<ReportPage />} />
             <Route path="/watchedvideos" element={<WatchedVideos />} />
             <Route path="/learning/:id" element={<LearningPage />} />
             <Route path="/success" element={<Success />} />
           </Route>
+          <Route path="/course-preview/:courseId" element={<CoursePreview />} />
         </Route>
+        {/* Catch-all route for 404 Not Found */}
+        <Route path="*" element={<NotFound />} />
 
-        {/* Other public routes */}
-        <Route path="/course-preview/:courseId" element={<CoursePreview />} />
+
+
       </Routes>
     </Suspense>
   );

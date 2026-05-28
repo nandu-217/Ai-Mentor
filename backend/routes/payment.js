@@ -3,6 +3,8 @@ import Stripe from "stripe";
 import dotenv from "dotenv";
 
 dotenv.config();
+// 1️⃣ Import the protect middleware safely
+import { protect } from "../middleware/authMiddleware.js"; 
 
 const router = express.Router();
 
@@ -16,6 +18,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // CREATE CHECKOUT SESSION
 router.post("/create-checkout-session", async (req, res) => {
+// ✅ CREATE CHECKOUT SESSION (2️⃣ Added 'protect' middleware here)
+router.post("/create-checkout-session", protect, async (req, res) => {
   try {
     const { course } = req.body;
 
@@ -59,9 +63,11 @@ router.post("/create-checkout-session", async (req, res) => {
         },
       ],
 
+      // ✅ 3️⃣ SECURE FIX: Bind the verified user ID from JWT token to metadata
       metadata: {
         courseId: course.id.toString(),
         courseTitle: course.title,
+        userId: req.user.id.toString(), // Attaches the secure user ID from the token
       },
 
       success_url: successUrl,
