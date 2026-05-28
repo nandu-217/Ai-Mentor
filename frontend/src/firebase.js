@@ -1,18 +1,22 @@
-// src/firebase.ts
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyAMLk9AR_45kxmcXLebUTTvvhNbAPuK41Q",
+  authDomain: "ai-mentor-478ca.firebaseapp.com",
+  projectId: "ai-mentor-478ca",
+  storageBucket: "ai-mentor-478ca.firebasestorage.app",
+  messagingSenderId: "581201803628",
+  appId: "1:581201803628:web:8b497f9f20fc4cd53d5b49",
+  measurementId: "G-29KQQN1V8W",
 };
 
 const app = initializeApp(firebaseConfig);
 
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
-export { signInWithPopup };
+
+export const analytics = getAnalytics(app);
+
+export default app;

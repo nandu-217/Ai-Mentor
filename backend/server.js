@@ -1,6 +1,8 @@
 // backend/server.js
-import express from "express";
 import dotenv from "dotenv";
+dotenv.config(); // MUST load env first
+
+import express from "express";
 import cors from "cors";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -19,7 +21,7 @@ import notificationRoutes from "./routes/notificationRoutes.js";
 import certificateRoutes from "./routes/certificateRoutes.js";
 import paymentRoutes from "./routes/payment.js";
 import preferenceRoutes from "./routes/preferenceRoutes.js";
-import contactUsRoutes from "./routes/contactus.js"; // ✅ fixed import
+import contactUsRoutes from "./routes/contactus.js";
 
 // ================= MODELS =================
 import "./models/CommunityPost.js";
@@ -27,8 +29,6 @@ import "./models/Notification.js";
 import "./models/Report.js";
 import "./models/modelAssociations.js";
 import "./models/contactMessage.js";
-
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -66,7 +66,7 @@ app.use("/api/community", communityRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/certificate", certificateRoutes);
 app.use("/api/preferences", preferenceRoutes);
-app.use("/api/contactus", contactUsRoutes); // ✅ added route
+app.use("/api/contactus", contactUsRoutes);
 
 // ================= 404 HANDLER =================
 app.use((req, res) => {

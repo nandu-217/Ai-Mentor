@@ -1,7 +1,9 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { signInWithPopup } from "firebase/auth";
+
 import logoGoogle from "../../assets/images/google.jpg";
-import { auth, googleProvider, signInWithPopup } from "../../firebase"; // Adjust path if needed
+import { auth, googleProvider } from "../../firebase";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
 
@@ -11,37 +13,49 @@ const SocialLogin = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      // Google popup login
       const result = await signInWithPopup(auth, googleProvider);
+
       const user = result.user;
+
+      // Firebase token
       const idToken = await user.getIdToken();
 
-      // Call backend to exchange Google token for your JWT
+      // Send token to backend
       const res = await fetch(
         `${import.meta.env.VITE_API_BASE_URL}/api/auth/google-login`,
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ idToken }),
-        }
+        },
       );
 
       const data = await res.json();
+
       if (!res.ok) {
         throw new Error(data.message || "Google login failed");
       }
 
-      // Use existing AuthContext login
       toast.success("Logged in successfully!");
-      setTimeout(() => {
-        login({ ...data, isGoogleUser: true });
-        // Redirect to onboarding if profile is incomplete
-        if (!data.isProfileComplete) {
-          navigate('/complete-profile');
-        } else {
-          navigate('/dashboard');
-        }
-      }, 1000);
+
+      // Save user using AuthContext
+      login({
+        ...data,
+        isGoogleUser: true,
+      });
+
+      // Redirect user
+      if (!data.isProfileComplete) {
+        navigate("/complete-profile");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
+      console.error("Google Login Error:", err);
+
       toast.error(err.message || "Google sign-in error");
     }
   };
@@ -58,6 +72,7 @@ const SocialLogin = () => {
           alt="Google"
           className="w-4 h-4 mr-2.5 object-contain"
         />
+
         <span className="text-sm">Sign in with Google</span>
       </button>
     </div>

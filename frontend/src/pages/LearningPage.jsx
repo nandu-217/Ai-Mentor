@@ -52,13 +52,14 @@ export default function Learning() {
   // Captions state
   const [captions, setCaptions] = useState([]);
   const [activeCaption, setActiveCaption] = useState("");
-  const celebrities = ["Salman Khan", "Modi ji", "SRK"];
+  const celebrities = ["Salman Khan", "Modi ji", "SRK","Amitabh Bachchan"];
 
   // map celebrities to videos and vtt files
   const celebrityVideoMap = {
     "Salman Khan": { video: "/videos/salman.mp4", vtt: "/videos/salman.vtt" },
     "Modi ji": { video: "/videos/modi.mp4", vtt: "/videos/modi.vtt" },
-    SRK: { video: "/videos/srk.mp4", vtt: "/videos/srk.vtt" },
+    "SRK": { video: "/videos/srk.mp4", vtt: "/videos/srk.vtt" },
+    "Amitabh Bachchan": { video: "/videos/amitabh.mp4", vtt: "/videos/amitabh.vtt" },
   };
 
   const [selectedCelebrity, setSelectedCelebrity] = useState(null);

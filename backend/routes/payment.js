@@ -1,19 +1,27 @@
 import express from "express";
 import Stripe from "stripe";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const router = express.Router();
 
-// ✅ Initialize Stripe safely
+// Ensure Stripe key exists
+if (!process.env.STRIPE_SECRET_KEY) {
+  throw new Error("❌ STRIPE_SECRET_KEY is missing in backend/.env");
+}
+
+// Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-// ✅ CREATE CHECKOUT SESSION
+// CREATE CHECKOUT SESSION
 router.post("/create-checkout-session", async (req, res) => {
   try {
     const { course } = req.body;
 
     console.log("Incoming course:", course);
 
-    // ✅ Validate course data
+    // Validate course data
     if (
       !course ||
       !course.id ||
@@ -26,13 +34,13 @@ router.post("/create-checkout-session", async (req, res) => {
       });
     }
 
-    // ✅ Convert price safely (₹ → paise)
+    // Convert ₹ to paise
     const amount = Math.round(Number(course.priceValue) * 100);
 
-    // ✅ Build success URL
+    // Success URL
     const successUrl = `${process.env.FRONTEND_URL}/success?courseId=${course.id}&title=${encodeURIComponent(course.title)}`;
 
-    console.log("✅ SUCCESS URL:", successUrl); // 🔥 DEBUG
+    console.log("✅ SUCCESS URL:", successUrl);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -51,14 +59,12 @@ router.post("/create-checkout-session", async (req, res) => {
         },
       ],
 
-      // ✅ pass metadata (VERY IMPORTANT for future webhook)
       metadata: {
         courseId: course.id.toString(),
         courseTitle: course.title,
       },
 
       success_url: successUrl,
-
       cancel_url: `${process.env.FRONTEND_URL}/courses`,
     });
 
@@ -69,7 +75,7 @@ router.post("/create-checkout-session", async (req, res) => {
     console.error("❌ Stripe Error:", error.message);
 
     return res.status(500).json({
-      error: "Stripe session failed",
+      error: error.message || "Stripe session failed",
     });
   }
 });

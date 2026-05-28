@@ -1,0 +1,44 @@
+# 1. Get a specific Course by its ID
+query GetCourseById($courseId: UUID!) @auth(level: PUBLIC, insecureReason: "It is acceptable for course details to be public.") {
+  course(id: $courseId) {
+    id
+    title
+    description
+    difficulty
+    estimatedCompletionTime
+    imageUrl
+    createdAt
+  }
+}
+
+# 2. List all available Courses
+query ListAllCourses @auth(level: PUBLIC, insecureReason: "It is acceptable for a list of courses to be public.") {
+  courses {
+    id
+    title
+    description
+    difficulty
+    imageUrl
+  }
+}
+
+# 3. Enroll a User in a Course
+mutation EnrollUserInCourse($courseId: UUID!, $status: String!) @auth(level: USER) {
+  enrollment_insert(data: {
+    userId_expr: "auth.uid",
+    courseId: $courseId,
+    enrolledAt_expr: "request.time",
+    status: $status
+  })
+}
+
+# 4. Submit a Lesson Assignment
+mutation SubmitAssignment($lessonId: UUID!, $codeContent: String!, $status: String!) @auth(level: USER) {
+  submission_insert(data: {
+    userId_expr: "auth.uid",
+    lessonId: $lessonId,
+    submittedAt_expr: "request.time",
+    codeContent: $codeContent,
+    status: $status
+  })
+}
